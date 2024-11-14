@@ -21,10 +21,11 @@ public class ClientHandler implements Runnable {
             this.bufferedReader = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
             this.clientName = this.bufferedReader.readLine();
+            System.out.println("Client is: " + this.clientName);
             CLIENT_LIST.add(this);
             broadcastMessage("SERVER: " + this.clientName + " has entered the chat!");
         } catch (IOException e) {
-            closeEverything(this.socket, this.bufferedReader, this.bufferedWriter);
+            closeEverything(this, this.socket, this.bufferedReader, this.bufferedWriter);
         }
     }
 
@@ -37,7 +38,7 @@ public class ClientHandler implements Runnable {
                 broadcastMessage(messageFromClient);
             }
         } catch (IOException e) {
-            closeEverything(this.socket, this.bufferedReader, this.bufferedWriter);
+            closeEverything(this, this.socket, this.bufferedReader, this.bufferedWriter);
         }
 
     }
@@ -51,8 +52,7 @@ public class ClientHandler implements Runnable {
                     clientHandler.bufferedWriter.newLine();
                     clientHandler.bufferedWriter.flush();
                 } catch (IOException e) {
-                    closeEverything(clientHandler.socket, clientHandler.bufferedReader, clientHandler.bufferedWriter);
-                    removeClient(clientHandler);
+                    closeEverything(clientHandler, clientHandler.socket, clientHandler.bufferedReader, clientHandler.bufferedWriter);
                 }
             }
         }
@@ -61,10 +61,12 @@ public class ClientHandler implements Runnable {
 
     private void removeClient(ClientHandler clientHandler) {
         CLIENT_LIST.remove(clientHandler);
+        broadcastMessage("SERVER: " + clientHandler.clientName + " has left the chat!");
+        System.out.println("Client: " + this.clientName + " disconnected: " + this.socket);
     }
 
-    private void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
-
+    private void closeEverything(ClientHandler clientHandler, Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
+        removeClient(clientHandler);
         try {
             if (socket != null) {
                 socket.close();

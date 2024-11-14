@@ -11,7 +11,7 @@ public class Server {
     }
 
     public void startServer() {
-
+        System.out.println("Started group chat server on port: " + this.serverSocket.getLocalPort());
         try {
             while(!this.serverSocket.isClosed()) {
                 Socket socket = this.serverSocket.accept();
@@ -37,6 +37,7 @@ public class Server {
     }
 
     public static void main(String[] args) throws IOException {
+        System.out.println("Starting group chat server...");
         int port = Integer.parseInt(args[0]);
         ServerSocket ss = new ServerSocket(port);
         Server server = new Server(ss);
